@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RSplash</string>
+
+    <!-- Strings used for fragments for navigation -->
+    <string name="home_fragment_label">Home</string>
+    <string name="random_picture_fragment_label">Random Picture</string>
+</resources>
