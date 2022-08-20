@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.svapp.rsplash.domain.UseCaseResult
 import com.svapp.rsplash.domain.model.PhotoDetails
-import com.svapp.rsplash.domain.photo.GetPhotoUseCase
+import com.svapp.rsplash.domain.photos.GetPhotoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,7 +17,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @HiltViewModel
 class PhotoDetailsViewModel @Inject constructor(
@@ -30,6 +31,7 @@ class PhotoDetailsViewModel @Inject constructor(
             tryEmit(getPhotoIdArg())
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: Flow<UiState> =
         _photoId.filterNotNull().flatMapLatest { photoId ->
             flow {
@@ -44,11 +46,9 @@ class PhotoDetailsViewModel @Inject constructor(
                 }
                 emit(state)
             }.catch { throwable ->
-                val state = UiState(
-                    error = throwable.message,
-                    isLoading = false
-                )
-                emit(state)
+                UiState(error = throwable.message, isLoading = false).run {
+                    emit(this)
+                }
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, UiState())
 

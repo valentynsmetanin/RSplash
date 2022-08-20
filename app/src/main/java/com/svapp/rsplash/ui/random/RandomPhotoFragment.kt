@@ -1,4 +1,4 @@
-package com.svapp.rsplash.ui.photodetails
+package com.svapp.rsplash.ui.random
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,20 +7,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import coil.load
-import com.svapp.rsplash.databinding.FragmentPhotoDetailsBinding
+import com.svapp.rsplash.databinding.FragmentRandomPhotoBinding
 import com.svapp.rsplash.domain.model.PhotoDetails
 import com.svapp.rsplash.utils.extensions.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * A simple [Fragment] subclass.
- * Displays photo details by photo id.
+ * Used for display random photo.
  */
 @AndroidEntryPoint
-class PhotoDetailsFragment : Fragment() {
+class RandomPhotoFragment : Fragment() {
 
-    private val viewModel: PhotoDetailsViewModel by viewModels()
-    private var _binding: FragmentPhotoDetailsBinding? = null
+    private val viewModel: RandomPhotoViewModel by viewModels()
+    private var _binding: FragmentRandomPhotoBinding? = null
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
@@ -30,7 +30,7 @@ class PhotoDetailsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPhotoDetailsBinding.inflate(inflater, container, false)
+        _binding = FragmentRandomPhotoBinding.inflate(inflater, container, false)
         observeUiState()
 
         return binding.root

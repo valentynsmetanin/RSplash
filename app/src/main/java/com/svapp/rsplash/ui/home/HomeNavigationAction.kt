@@ -1,6 +1,8 @@
 package com.svapp.rsplash.ui.home
 
-sealed class HomeNavigationAction {
+sealed interface HomeNavigationAction {
 
-    class NavigateToPhotoDetails(val photoId: String) : HomeNavigationAction()
+    class NavigateToPhotoDetails(val photoId: String) : HomeNavigationAction
+
+    object NavigateToRandomPhoto : HomeNavigationAction
 }

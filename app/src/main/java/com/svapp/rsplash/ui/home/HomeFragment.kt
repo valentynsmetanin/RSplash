@@ -63,6 +63,9 @@ class HomeFragment : Fragment() {
             swipeRefreshHome.setOnRefreshListener {
                 viewModel.refreshPhotos()
             }
+            fabRandomPhoto.setOnClickListener {
+                viewModel.onRandomClick()
+            }
         }
     }
 
@@ -94,6 +97,9 @@ class HomeFragment : Fragment() {
                     is HomeNavigationAction.NavigateToPhotoDetails -> {
                         navigatePhotoDetails(action.photoId)
                     }
+                    is HomeNavigationAction.NavigateToRandomPhoto -> {
+                        navigateRandomPhoto()
+                    }
                 }
             }
         }
@@ -101,6 +107,12 @@ class HomeFragment : Fragment() {
 
     private fun navigatePhotoDetails(photoId: String) {
         HomeFragmentDirections.actionHomeFragmentToPhotoDetailsFragment(photoId).run {
+            findNavController().navigate(this)
+        }
+    }
+
+    private fun navigateRandomPhoto() {
+        HomeFragmentDirections.actionHomeFragmentToRandomPhotoFragment().run {
             findNavController().navigate(this)
         }
     }

@@ -1,12 +1,12 @@
 package com.svapp.rsplash.common.di
 
+import com.svapp.rsplash.BuildConfig
 import com.svapp.rsplash.common.network.retrofit.RSplashRetrofitFactory
 import com.svapp.rsplash.common.network.retrofit.RetrofitFactory
 import com.svapp.rsplash.common.network.retrofit.config.BaseUrl
 import com.svapp.rsplash.common.network.retrofit.config.RetrofitConfig
 import com.svapp.rsplash.common.network.retrofit.createService
 import com.svapp.rsplash.data.network.UnsplashApiService
-import com.svapp.rsplash.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

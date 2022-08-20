@@ -1,4 +1,4 @@
-package com.svapp.rsplash.domain.photo
+package com.svapp.rsplash.domain.photos
 
 import com.svapp.rsplash.common.di.DefaultDispatcher
 import com.svapp.rsplash.data.repository.PhotosRepository

@@ -12,7 +12,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.snackbar.Snackbar
 import com.svapp.rsplash.R
 import com.svapp.rsplash.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,13 +42,6 @@ class MainActivity : AppCompatActivity() {
         setupAppBarConfiguration()
 
         observeTitle()
-
-        // TODO: move fab to HomeFragment
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAnchorView(R.id.fab)
-                .setAction("Action", null).show()
-        }
     }
 
     private fun setupAppBarConfiguration() {
