@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -35,6 +36,7 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         setupCategoriesRecyclerView()
+        setSearchTextListener()
         observeUiState()
         observeNavigationActions()
 
@@ -49,6 +51,12 @@ class HomeFragment : Fragment() {
             val itemDecoration =
                 GridOffsetItemDecoration(R.dimen.default_margin_half, numberOfColumns)
             addItemDecoration(itemDecoration)
+        }
+    }
+
+    private fun setSearchTextListener() {
+        binding.editTextSearch.doAfterTextChanged {
+            viewModel.onSearchQueryChanged(it)
         }
     }
 

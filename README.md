@@ -21,6 +21,7 @@ devDebug *apk:
 // TODO
 
 [!TODO]
+* Implement paging.
 * Improve UX :) (Even with Jetpack Compose usage)
 * Cover at least sensitive codebase by Unit tests.
 * Add API error handling.

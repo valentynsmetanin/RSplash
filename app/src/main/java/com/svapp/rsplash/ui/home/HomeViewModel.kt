@@ -12,6 +12,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -27,16 +29,38 @@ class HomeViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState())
     val uiState: Flow<UiState> = _uiState.stateIn(viewModelScope, SharingStarted.Lazily, UiState())
 
+    private val _searchQuery: MutableStateFlow<CharSequence?> = MutableStateFlow(null)
+
     init {
-        refreshPhotos()
+        getFeedPhotos()
     }
 
     // SIDE EFFECTS: Navigation actions
     private val _navigationActions = Channel<HomeNavigationAction>(capacity = Channel.CONFLATED)
+
     // Exposed with receiveAsFlow to make sure that only one observer receives updates.
     val navigationActions = _navigationActions.receiveAsFlow()
 
-    fun refreshPhotos() {
+    fun onPhotoClick(photo: PhotoDetails) {
+        HomeNavigationAction.NavigateToPhotoDetails(photo.id).run {
+            _navigationActions.tryOffer(this)
+        }
+    }
+
+    fun onSearchQueryChanged(query: CharSequence?) {
+        _searchQuery.update { query }
+        viewModelScope.launch {
+            _searchQuery.debounce(500L).collectLatest {
+                if (it.isNullOrEmpty()) {
+                    getFeedPhotos()
+                } else {
+                    searchPhotos(it)
+                }
+            }
+        }
+    }
+
+    private fun getFeedPhotos() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             val result = getPhotosFeedUseCase.invoke(Unit)
@@ -53,9 +77,22 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onPhotoClick(photo: PhotoDetails) {
-        HomeNavigationAction.NavigateToPhotoDetails(photo.id).run {
-            _navigationActions.tryOffer(this)
+    private fun searchPhotos(query: CharSequence?) {
+        query?.toString()?.let { searchQuery ->
+            _uiState.update { it.copy(isLoading = true) }
+            viewModelScope.launch {
+                val result = searchPhotosUseCase.invoke(searchQuery)
+                _uiState.update { state ->
+                    when (result) {
+                        is UseCaseResult.Error -> {
+                            state.copy(error = result.exception.message, isLoading = false)
+                        }
+                        is UseCaseResult.Success -> {
+                            state.copy(photos = result.data, isLoading = false)
+                        }
+                    }
+                }
+            }
         }
     }
 
