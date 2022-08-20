@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor(
     private val searchPhotosUseCase: SearchPhotosUseCase
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState(isLoading = true)).apply {  }
+    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState())
     val uiState: Flow<UiState> =
         _uiState.stateIn(viewModelScope, SharingStarted.Lazily, _uiState.value)
 
@@ -47,6 +47,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // TODO: Add debounce
     fun onSearchQueryChanged(query: CharSequence?) {
         _searchQuery.update { query }
         refreshPhotos()

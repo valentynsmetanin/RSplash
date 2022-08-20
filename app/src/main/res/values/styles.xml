@@ -2,7 +2,7 @@
 <resources>
 
     <style name="ShapeAppearance.RSplash.CardView.HomePhoto" parent="">
-        <item name="cornerSize">@dimen/default_margin</item>
+        <item name="cornerSize">@dimen/default_margin_quarter</item>
         <item name="cornerFamilyBottomLeft">cut</item>
     </style>
 </resources>

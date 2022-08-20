@@ -4,4 +4,6 @@
     <!-- Strings used for fragments for navigation -->
     <string name="home_fragment_label">Home</string>
     <string name="random_picture_fragment_label">Random Picture</string>
+
+    <string name="hint_search">Search</string>
 </resources>
