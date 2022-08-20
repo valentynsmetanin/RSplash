@@ -47,7 +47,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // TODO: Add debounce
     fun onSearchQueryChanged(query: CharSequence?) {
         _searchQuery.update { query }
         refreshPhotos()

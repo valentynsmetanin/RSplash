@@ -18,8 +18,8 @@ class HomePhotosAdapter(
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemHomePhotoBinding.inflate(inflater, parent, false)
         return ViewHolder(binding) { position ->
-            val category = getItem(position)
-            onPhotoClick.invoke(category)
+            val photo = getItem(position)
+            onPhotoClick.invoke(photo)
         }
     }
 

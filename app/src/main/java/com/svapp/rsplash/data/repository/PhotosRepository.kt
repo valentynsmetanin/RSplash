@@ -9,4 +9,6 @@ interface PhotosRepository {
     suspend fun searchPhotos(query: String): List<Photo>
 
     suspend fun getRandomPhoto(): Photo
+
+    suspend fun getPhoto(photoId: String): Photo
 }

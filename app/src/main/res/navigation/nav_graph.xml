@@ -12,8 +12,18 @@
         tools:layout="@layout/fragment_home">
 
         <action
-            android:id="@+id/action_HomeFragment_to_RandomPictureFragment2"
+            android:id="@+id/action_HomeFragment_to_RandomPictureFragment"
             app:destination="@id/RandomPictureFragment" />
+
+        <action
+            android:id="@+id/action_HomeFragment_to_photoDetailsFragment"
+            app:destination="@id/photoDetailsFragment">
+
+            <argument
+                android:name="photoId"
+                app:argType="string"
+                app:nullable="false" />
+        </action>
     </fragment>
 
     <fragment
@@ -21,4 +31,11 @@
         android:name="com.svapp.rsplash.ui.random.RandomPictureFragment"
         android:label="@string/random_picture_fragment_label"
         tools:layout="@layout/fragment_random_picture" />
+
+    <fragment
+        android:id="@+id/photoDetailsFragment"
+        android:name="com.svapp.rsplash.ui.photodetails.PhotoDetailsFragment"
+        android:label="@string/photo_details_fragment_label"
+        tools:layout="@layout/fragment_photo_details" />
+
 </navigation>

@@ -3,6 +3,7 @@ package com.svapp.rsplash.data.network
 import com.svapp.rsplash.data.model.Photo
 import com.svapp.rsplash.data.model.SearchPhoto
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface UnsplashApiService {
@@ -26,4 +27,11 @@ interface UnsplashApiService {
      */
     @GET("/photos/random")
     suspend fun getRandomPhoto(): Photo
+
+    /**
+     * Retrieve a single photo.
+     * @return photo
+     */
+    @GET("/photos/{photoId}")
+    suspend fun getPhoto(@Path("photoId") photoId: String): Photo
 }

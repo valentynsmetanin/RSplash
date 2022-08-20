@@ -4,14 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.svapp.rsplash.R
+import com.svapp.rsplash.databinding.FragmentHomeBinding
+import com.svapp.rsplash.ui.utils.afterTextChangedAsFlow
 import com.svapp.rsplash.ui.utils.recyclerview.GridOffsetItemDecoration
 import com.svapp.rsplash.utils.extensions.launchAndRepeatWithViewLifecycle
-import com.svapp.rsplash.databinding.FragmentHomeBinding
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -37,7 +40,7 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         setupCategoriesRecyclerView()
         setClickListeners()
-        setSearchTextListener()
+        setSearchTextChangeListener()
         observeUiState()
         observeNavigationActions()
 
@@ -63,9 +66,15 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setSearchTextListener() {
-        binding.editTextSearch.doAfterTextChanged {
-            viewModel.onSearchQueryChanged(it)
+    @OptIn(FlowPreview::class)
+    private fun setSearchTextChangeListener() {
+        launchAndRepeatWithViewLifecycle {
+            binding.editTextSearch
+                .afterTextChangedAsFlow()
+                .debounce(SEARCH_DEBOUNCE_MILLIS) // Avoid fast user input
+                .collect {
+                    viewModel.onSearchQueryChanged(it)
+                }
         }
     }
 
@@ -91,7 +100,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun navigatePhotoDetails(photoId: String) {
-        // TODO: navigate to details
+        HomeFragmentDirections.actionHomeFragmentToPhotoDetailsFragment(photoId).run {
+            findNavController().navigate(this)
+        }
     }
 
     override fun onDestroyView() {
@@ -99,4 +110,7 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
+    private companion object {
+        private const val SEARCH_DEBOUNCE_MILLIS = 500L
+    }
 }

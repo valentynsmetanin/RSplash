@@ -7,5 +7,6 @@ data class Photo(
     @SerializedName("created_at")
     val createdAt: String?,
     val urls: Urls?,
-    val user: PhotoUser?
+    val user: PhotoUser?,
+    val description: String?
 )

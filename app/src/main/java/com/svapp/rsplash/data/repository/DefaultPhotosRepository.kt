@@ -17,4 +17,8 @@ class DefaultPhotosRepository @Inject constructor(
     }
 
     override suspend fun getRandomPhoto(): Photo = apiService.getRandomPhoto()
+
+    override suspend fun getPhoto(photoId: String): Photo {
+        return apiService.getPhoto(photoId)
+    }
 }
