@@ -7,11 +7,18 @@ import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.svapp.rsplash.R
 import com.svapp.rsplash.ui.utils.recyclerview.GridOffsetItemDecoration
 import com.svapp.rsplash.utils.extensions.launchAndRepeatWithViewLifecycle
 import com.svapp.rsplash.databinding.FragmentHomeBinding
+import com.svapp.rsplash.ui.utils.doAfterTextChanged
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -36,6 +43,7 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         setupCategoriesRecyclerView()
+        setClickListeners()
         setSearchTextListener()
         observeUiState()
         observeNavigationActions()
@@ -54,16 +62,28 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setSearchTextListener() {
-        binding.editTextSearch.doAfterTextChanged {
-            viewModel.onSearchQueryChanged(it)
+    private fun setClickListeners() {
+        with(binding) {
+            swipeRefreshHome.setOnRefreshListener {
+                viewModel.refreshPhotos()
+            }
         }
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun setSearchTextListener() {
+        binding.editTextSearch
+            .doAfterTextChanged()
+            .debounce(SEARCH_DEBOUNCE_MILLIS)
+            .onEach {
+                viewModel.onSearchQueryChanged(it)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun observeUiState() {
         launchAndRepeatWithViewLifecycle {
             viewModel.uiState.collect {
-                // binding.swipeRefreshHome.isRefreshing = it.isLoading
+                binding.swipeRefreshHome.isRefreshing = it.isLoading
                 photosAdapter.submitList(it.photos)
             }
         }
@@ -88,5 +108,9 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private companion object {
+        private const val SEARCH_DEBOUNCE_MILLIS = 500L
     }
 }

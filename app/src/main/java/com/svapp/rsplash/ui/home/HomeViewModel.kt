@@ -12,8 +12,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -26,20 +25,21 @@ class HomeViewModel @Inject constructor(
     private val searchPhotosUseCase: SearchPhotosUseCase
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState())
-    val uiState: Flow<UiState> = _uiState.stateIn(viewModelScope, SharingStarted.Lazily, UiState())
+    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState(isLoading = true)).apply {  }
+    val uiState: Flow<UiState> =
+        _uiState.stateIn(viewModelScope, SharingStarted.Lazily, _uiState.value)
 
     private val _searchQuery: MutableStateFlow<CharSequence?> = MutableStateFlow(null)
-
-    init {
-        getFeedPhotos()
-    }
 
     // SIDE EFFECTS: Navigation actions
     private val _navigationActions = Channel<HomeNavigationAction>(capacity = Channel.CONFLATED)
 
     // Exposed with receiveAsFlow to make sure that only one observer receives updates.
     val navigationActions = _navigationActions.receiveAsFlow()
+
+    init {
+        refreshPhotos()
+    }
 
     fun onPhotoClick(photo: PhotoDetails) {
         HomeNavigationAction.NavigateToPhotoDetails(photo.id).run {
@@ -49,48 +49,42 @@ class HomeViewModel @Inject constructor(
 
     fun onSearchQueryChanged(query: CharSequence?) {
         _searchQuery.update { query }
+        refreshPhotos()
+    }
+
+    fun refreshPhotos() {
         viewModelScope.launch {
-            _searchQuery.debounce(500L).collectLatest {
-                if (it.isNullOrEmpty()) {
-                    getFeedPhotos()
-                } else {
-                    searchPhotos(it)
-                }
-            }
+            val query = _searchQuery.firstOrNull()
+            fetchPhotos(query)
         }
     }
 
-    private fun getFeedPhotos() {
+    private fun fetchPhotos(query: CharSequence?) {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            val result = getPhotosFeedUseCase.invoke(Unit)
-            _uiState.update { state ->
-                when (result) {
-                    is UseCaseResult.Error -> {
-                        state.copy(error = result.exception.message, isLoading = false)
-                    }
-                    is UseCaseResult.Success -> {
-                        state.copy(photos = result.data, isLoading = false)
-                    }
-                }
+            val result = if (query.isNullOrEmpty()) {
+                getFeedPhotos()
+            } else {
+                searchPhotos(query)
             }
+            updateUiState(result)
         }
     }
 
-    private fun searchPhotos(query: CharSequence?) {
-        query?.toString()?.let { searchQuery ->
-            _uiState.update { it.copy(isLoading = true) }
-            viewModelScope.launch {
-                val result = searchPhotosUseCase.invoke(searchQuery)
-                _uiState.update { state ->
-                    when (result) {
-                        is UseCaseResult.Error -> {
-                            state.copy(error = result.exception.message, isLoading = false)
-                        }
-                        is UseCaseResult.Success -> {
-                            state.copy(photos = result.data, isLoading = false)
-                        }
-                    }
+    private suspend fun getFeedPhotos() = getPhotosFeedUseCase.invoke(Unit)
+
+    private suspend fun searchPhotos(
+        query: CharSequence
+    ) = searchPhotosUseCase.invoke(query.toString())
+
+    private fun updateUiState(result: UseCaseResult<List<PhotoDetails>>) {
+        _uiState.update { state ->
+            when (result) {
+                is UseCaseResult.Error -> {
+                    state.copy(error = result.exception.message, isLoading = false)
+                }
+                is UseCaseResult.Success -> {
+                    state.copy(photos = result.data, isLoading = false)
                 }
             }
         }
