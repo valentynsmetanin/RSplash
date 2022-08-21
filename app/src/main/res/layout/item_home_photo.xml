@@ -25,6 +25,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:src="?colorSecondaryContainer" />
 
+        <!-- TODO: Use text color & background color from theme -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_view_user_name"
             android:layout_width="0dp"
@@ -35,7 +36,7 @@
             android:maxLines="1"
             android:padding="@dimen/default_margin_half"
             android:textAppearance="?attr/textAppearanceBody2"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="@android:color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
