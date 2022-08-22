@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import coil.load
@@ -15,6 +16,11 @@ import dagger.hilt.android.AndroidEntryPoint
 /**
  * A simple [Fragment] subclass.
  * Used for display random photo.
+ *
+ * This fragment is almost clone on [com.svapp.rsplash.ui.photodetails.PhotoDetailsFragment] fragment.
+ * Purpose of not reusing that fragment instead is to keep Single Responsibility principle.
+ * (In case [RandomPhotoFragment] or [com.svapp.rsplash.ui.photodetails.PhotoDetailsFragment] changes).
+ * Please don't define it as code duplication.
  */
 @AndroidEntryPoint
 class RandomPhotoFragment : Fragment() {
@@ -40,6 +46,7 @@ class RandomPhotoFragment : Fragment() {
         launchAndRepeatWithViewLifecycle {
             viewModel.uiState.collect {
                 updatePhotoUi(it.photo)
+                binding.progress.isVisible = it.isLoading
             }
         }
     }

@@ -21,8 +21,10 @@ devDebug *apk:
 // TODO
 
 [!TODO]
-* Implement paging.
+* Implement paging for Unsplash API.
 * Improve UX :) (Even with Jetpack Compose usage)
+* HomeFragment hide Fab on RecyclerView scroll.
+* Edge to Edge UI.
 * Cover at least sensitive codebase by Unit tests.
 * Add API error handling.
 * ViewModel - add CoroutineExceptionHandler to viewModelScope to handle top level Exceptions.

@@ -34,7 +34,7 @@ class HomePhotosAdapter(
 
         init {
             itemView.setOnClickListener {
-                onItemClick.invoke(adapterPosition)
+                onItemClick.invoke(adapterPosition) // TODO: use bindingAdapterPosition instead
             }
         }
 
