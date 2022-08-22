@@ -10,15 +10,13 @@ The project is a draft client of Unsplash API.
 [!Important]
 * Place your Unsplash Access Key to [key.properties](/key.properties)
 * There can be a few solutions that aren't common, the explanation for them are in comments.
-* Please use [devDebug] and [prodDebug] build variants. They are configured to call requests on HTTP protocol.
-Due to security reasons [devRelease] and [prodRelease] build variants are not allowed to call
-requests on HTTP.
+* Please use [devDebug] and [prodDebug] build variants.
 
 [!Demo]
 Video:
-// TODO
+[RSplash-demo.mp4](/outputs/RSplash-demo.mp4)
 devDebug *apk:
-// TODO
+[app-dev-debug.apk](/outputs/app-dev-debug.apk)
 
 [!TODO]
 * Implement paging for Unsplash API.
